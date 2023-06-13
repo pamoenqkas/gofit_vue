@@ -58,14 +58,46 @@
         </div>
       </div>
     </div>
-    <div class="toast align-items-center text-white bg-danger" role="alert" aria-live="assertive" aria-atomic="true" :class="{ show: snackbar.show }">
-  <div class="d-flex">
-    <div class="toast-body">
-      {{ snackbar.message }}
+    <div
+      class="toast align-items-center text-white bg-danger"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      :class="{ show: snackbar.show }"
+    >
+      <div class="d-flex">
+        <div class="toast-body">
+          {{ snackbar.message }}
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          data-bs-dismiss="toast"
+          aria-label="Close"
+          @click="snackbar.show = false"
+        ></button>
+      </div>
     </div>
-    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close" @click="snackbar.show = false"></button>
-  </div>
-</div>
+    <div
+      class="toast align-items-center text-white bg-success"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      :class="{ show: loginSuccess }"
+    >
+      <div class="d-flex">
+        <div class="toast-body">
+          Login successful.
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-white me-2 m-auto"
+          data-bs-dismiss="toast"
+          aria-label="Close"
+          @click="loginSuccess = false"
+        ></button>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -73,6 +105,8 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import Swal from 'sweetalert2';
+
 
 export default {
   setup() {
@@ -83,7 +117,7 @@ export default {
 
     const validation = ref([])
     const router = useRouter()
-    const loginFailed = ref(null)
+    const loginSuccess = ref(false)
     const snackbar = reactive({
       show: false,
       message: '',
@@ -98,25 +132,55 @@ export default {
           password: password,
         })
         .then((response) => {
-          if(response.data.success){
-            localStorage.setItem('role', response.data.role);
-            localStorage.setItem('id', response.data.id);
+          if (response.data.success) {
+            localStorage.setItem('role', response.data.role)
+            localStorage.setItem('id', response.data.id)
             router.push({
               name: 'beranda',
               params: {
                 type: 'success',
-                text: 'Login Berhasil',
+                // text: 'Login Berhasil',
               },
-            });
-          }else{
-            loginFailed.value = true;
+            })
+            Swal.fire({
+              title: 'Login Berhasil',
+              width: 600,
+              padding: '3em',
+              color: '#716add',
+              background: '#fff url(/images/trees.png)',
+              backdrop: `
+                rgba(0,0,123,0.4)
+                url("/images/nyan-cat.gif")
+                left top
+                no-repeat
+              `
+            })
+            loginSuccess.value = true
+            setTimeout(() => {
+              loginSuccess.value = false
+            }, 3000) // Menutup pop-up setelah 3 detik
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Login Gagal',
+              text: 'Something went wrong!',
+              footer: '<a href="">Why do I have this issue?</a>'
+            })
+            validation.value = response.data.errors
+            // snackbar.message = 'Login failed.'
+            // snackbar.show = true
           }
-
         })
         .catch((error) => {
+          Swal.fire({
+              icon: 'error',
+              title: 'Login Gagal',
+              text: 'Something went wrong!',
+              footer: '<a href="">Why do I have this issue?</a>'
+            })
           validation.value = error.response.data
-          snackbar.message = 'Login failed.'
-          snackbar.show = true
+          // snackbar.message = 'Login failed.'
+          // snackbar.show = true
         })
     }
 
@@ -125,7 +189,7 @@ export default {
       validation,
       router,
       store,
-      loginFailed,
+      loginSuccess,
       snackbar,
     }
   },

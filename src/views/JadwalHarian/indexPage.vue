@@ -36,8 +36,8 @@
             <p align="right">
                   <button class="btn btn-sm btn-success ml-2 " @click.prevent="store()">Generate</button>
               </p>  
-            <div v-if="checkGenerated.status" class="mt-1 alert alert-danger">Jadwal sudah di generate</div>
-            <div v-else>
+            <!-- <div v-if="checkGenerated.status" class="mt-1 alert alert-danger">Jadwal sudah di generate</div>
+            <div v-else> -->
 
             </div>
               <!-- <div v-else></div> -->
@@ -83,7 +83,7 @@
             </div>
           </div>
         </div>
-      </div>
+      <!-- </div> -->
     <!-- </div> -->
   </template>
   
@@ -91,6 +91,8 @@
   import axios from "axios";
   import { onMounted, ref, reactive } from "vue";
   import { useRouter } from 'vue-router'
+  import Swal from 'sweetalert2'
+
   
   export default {
     setup() {
@@ -123,7 +125,7 @@
 
       function store(){
         if(jadwal_harian.value.length <= 0){
-          axios.post('https://pam.ppcdeveloper.com/api/jadwal_harian/', {
+          axios.post('https://pam.ppcdeveloper.com/api/jadwal_harian', {
         }).then(() => {
             //redirect ke post index
             router.push({
@@ -136,6 +138,15 @@
             validation.value = error.response.data
         })
         }else{
+          Swal.fire({
+              icon: 'error',
+              title: 'Gagal Generate',
+                // text: 'Something went wrong!',
+                // footer: '<a href="">Why do I have this issue?</a>'
+                })
+                router.push({
+                    name: 'jadwal_harian.index'
+                })
           checkGenerated.status = true
           setTimeout(function(){
             window.location.reload();

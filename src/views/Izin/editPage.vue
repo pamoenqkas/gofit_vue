@@ -29,6 +29,7 @@
     import axios from "axios";
     import { onMounted, ref } from "vue";
     import { useRouter , useRoute } from 'vue-router'
+    import Swal from 'sweetalert2'
     export default {
     created(){
         this.id_izin = this.$route.params.id_izin
@@ -81,11 +82,37 @@
                 status: status,
             }).then(() => {
                 //redirect ke post index
+                Swal.fire({
+                title: 'Do you want to save the changes?',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+                denyButtonText: `Don't save`,
+                }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    Swal.fire('Saved!', '', 'success')
+                    router.push({
+                        name: 'izin.index'
+                    })
+                } else if (result.isDenied) {
+                    Swal.fire('Changes are not saved', '', 'info')
+                }
+                })
+                // router.push({
+                //     name: 'izin.index'
+                // })
+            }).catch(error => {
+                //assign state validation with error
+                Swal.fire({
+              icon: 'error',
+              title: 'Gagal Update Izin',
+                // text: 'Something went wrong!',
+                // footer: '<a href="">Why do I have this issue?</a>'
+                })
                 router.push({
                     name: 'izin.index'
                 })
-            }).catch(error => {
-                //assign state validation with error
                 validation.value = error.response.data
                 console.log(error.response.data)
             })

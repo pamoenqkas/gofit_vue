@@ -8,6 +8,7 @@ import 'jquery/dist/jquery.min'
 import 'popper.js/dist/popper.min'
 import 'bootstrap/dist/js/bootstrap.min'
 
+
 const app = createApp(App)
 //use vue router
 app.use(router)

@@ -123,7 +123,7 @@
                 let tanggal = jadwal_harian.tanggal
                 let keterangan = jadwal_harian.keterangan
             
-                axios.post('https://pam.ppcdeveloper.com/api/jadwal_harian/', {
+                axios.post('https://pam.ppcdeveloper.com/api/jadwal_harian', {
                     id_jadwal_harian: id_jadwal_harian,
                     id_instruktur: id_instruktur,
                     id_kelas: id_kelas,
